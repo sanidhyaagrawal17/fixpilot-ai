@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FixPilot — Autonomous Code Debugging Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="navbar">
+      <div class="nav-brand">
+        <span class="brand-logo">🔧</span>
+        <div class="brand-text">
+          <h1>FixPilot</h1>
+          <p class="tagline">Autonomous Code Debugger powered by NVIDIA Nemotron & Nebius</p>
+        </div>
+      </div>
+      <div class="nav-badges">
+        <span class="badge" id="backend-status">● Connecting...</span>
+        <span class="badge highlight">Coding & Agentic Track</span>
+      </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <main class="grid-layout">
+      <!-- Left Column: Input & Controls -->
+      <section class="panel input-panel">
+        <div class="panel-header">
+          <h2>Diagnostic Input</h2>
+          <div class="scenario-selector">
+            <span class="label">Quick Scenarios:</span>
+            <div class="scenario-buttons" id="scenario-btn-group">
+              <!-- Dynamically populated from /api/scenarios -->
+            </div>
+          </div>
+        </div>
+
+        <form id="debug-form" class="form-body">
+          <div class="field-group">
+            <div class="field-header">
+              <label for="error-traceback">Error Traceback / Failure Output <span class="required">*</span></label>
+              <button type="button" class="btn-text" id="clear-traceback">Clear</button>
+            </div>
+            <textarea id="error-traceback" rows="6" placeholder="Paste python traceback, exception, or test failure..." required spellcheck="false"></textarea>
+          </div>
+
+          <div class="field-group">
+            <div class="field-header">
+              <label for="source-code">Faulty Source Code</label>
+              <span class="hint">or paste GitHub repo below</span>
+            </div>
+            <textarea id="source-code" rows="9" placeholder="def broken_function(): ..." spellcheck="false"></textarea>
+          </div>
+
+          <div class="field-group">
+            <div class="field-header">
+              <label for="test-code">Test Harness / Validation Assertions</label>
+              <span class="hint">Optional: sandbox runs this to verify fix</span>
+            </div>
+            <textarea id="test-code" rows="5" placeholder="def test_fix():&#10;    assert broken_function() == expected" spellcheck="false"></textarea>
+          </div>
+
+          <div class="field-group">
+            <div class="field-header">
+              <label for="github-url">GitHub Repository URL</label>
+              <span class="hint">Optional clone target</span>
+            </div>
+            <input type="url" id="github-url" placeholder="https://github.com/owner/repository" autocomplete="off">
+          </div>
+
+          <div class="action-footer">
+            <button type="submit" id="btn-submit" class="btn-primary">
+              <span class="btn-icon">⚡</span>
+              <span class="btn-label">Run Autonomous Debugger</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Right Column: Agent Progression & Fix Output -->
+      <section class="panel output-panel">
+        <div class="panel-header">
+          <h2>Agent Execution & Telemetry</h2>
+          <div class="status-summary" id="agent-state-pill">
+            <span class="status-indicator"></span>
+            <span class="status-text">Ready</span>
+          </div>
+        </div>
+
+        <!-- Live Step Timeline -->
+        <div class="timeline-container">
+          <div class="timeline-header">
+            <h3>Diagnostic Pipeline</h3>
+            <span class="execution-time" id="total-time"></span>
+          </div>
+          <div class="timeline-steps" id="timeline-list">
+            <div class="timeline-empty">Submit an error or select a quick scenario to begin the agent loop.</div>
+          </div>
+        </div>
+
+        <!-- Grounding & References -->
+        <div class="docs-container" id="docs-section" style="display: none;">
+          <div class="section-title">
+            <span>📚 Tavily Grounded References</span>
+          </div>
+          <div class="docs-list" id="docs-list"></div>
+        </div>
+
+        <!-- Synthesized Fix & Diff -->
+        <div class="fix-container" id="fix-section" style="display: none;">
+          <div class="section-title">
+            <span>Verified Fix & Diff</span>
+            <div class="fix-actions">
+              <button type="button" class="btn-secondary" id="btn-copy-code">Copy Fixed Code</button>
+            </div>
+          </div>
+
+          <div class="explanation-box" id="fix-explanation"></div>
+
+          <div class="tab-group">
+            <button class="tab-btn active" data-tab="diff">Unified Diff</button>
+            <button class="tab-btn" data-tab="code">Full Repaired Code</button>
+            <button class="tab-btn" data-tab="test">Sandbox Test Output</button>
+          </div>
+
+          <div class="tab-content" id="tab-diff">
+            <pre class="code-block" id="diff-output"></pre>
+          </div>
+
+          <div class="tab-content" id="tab-code" style="display: none;">
+            <pre class="code-block" id="full-code-output"></pre>
+          </div>
+
+          <div class="tab-content" id="tab-test" style="display: none;">
+            <pre class="code-block" id="sandbox-output"></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-left">
+        <span>FixPilot v1.0.0</span> &bull; 
+        <span>Nebius AI Cloud & Token Factory</span> &bull;
+        <span>NVIDIA Nemotron (Ultra, Super, Nano)</span> &bull;
+        <span>Tavily Search API</span>
+      </div>
+      <div class="footer-right">
+        <a href="https://github.com/sanidhyaagrawal17" target="_blank" rel="noopener">Sanidhya Agrawal</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
