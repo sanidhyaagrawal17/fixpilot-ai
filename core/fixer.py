@@ -89,9 +89,15 @@ class CodeFixer:
             )
         except Exception as exc:
             logger.warning(f"Nemotron Super fix synthesis call failed: {exc}. Using heuristic fix.")
-            return self._heuristic_fix(source_code, analysis, filename)
+            return self._heuristic_fix(source_code, analysis, filename, test_failure_output=test_failure_output)
 
-    def _heuristic_fix(self, source_code: str, analysis: AnalysisResult, filename: str) -> FixResult:
+    def _heuristic_fix(
+        self,
+        source_code: str,
+        analysis: AnalysisResult,
+        filename: str,
+        test_failure_output: Optional[str] = None
+    ) -> FixResult:
         """Fallback fix generator if LLM response fails."""
         # Simple heuristic corrections for common demo patterns
         fixed = source_code
@@ -130,6 +136,37 @@ class CodeFixer:
             )
             changes.append("Migrated BaseSettings import to 'pydantic_settings' package per Pydantic v2 migration docs")
             explanation = "Resolved PydanticImportError by importing BaseSettings from modern pydantic_settings package."
+        elif "calculate_metrics_batch" in source_code:
+            if test_failure_output and ("ZeroDivision" in test_failure_output or "division by zero" in test_failure_output):
+                fixed = (
+                    "def calculate_metrics_batch(payload):\n"
+                    "    if not payload:\n"
+                    "        return {'count': 0, 'average': 0.0}\n"
+                    "    items = payload.get('metrics') or payload.get('telemetry', [])\n"
+                    "    if not items:\n"
+                    "        return {'count': 0, 'average': 0.0}\n"
+                    "    total_score = sum(item.get('score', 0) for item in items)\n"
+                    "    average = total_score / len(items)\n"
+                    "    return {\n"
+                    "        'count': len(items),\n"
+                    "        'average': round(average, 2)\n"
+                    "    }\n"
+                )
+                changes.append("Added empty collection guard: if not items: return {'count': 0, 'average': 0.0}")
+                explanation = "Resolved ZeroDivisionError on empty payload by returning zeroed metrics structure."
+            else:
+                fixed = (
+                    "def calculate_metrics_batch(payload):\n"
+                    "    items = (payload.get('metrics') or payload.get('telemetry', [])) if payload else []\n"
+                    "    total_score = sum(item.get('score', 0) for item in items)\n"
+                    "    average = total_score / len(items)\n"
+                    "    return {\n"
+                    "        'count': len(items),\n"
+                    "        'average': round(average, 2)\n"
+                    "    }\n"
+                )
+                changes.append("Replaced direct subscript with safe .get() fallback for 'metrics' and 'telemetry'")
+                explanation = "Resolved KeyError by accessing payload with safe .get() fallback."
 
         diff = compute_unified_diff(source_code, fixed, filename=filename)
         return FixResult(

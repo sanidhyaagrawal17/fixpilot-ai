@@ -175,20 +175,20 @@ docker-compose up --build
 
 ## 🧪 Running the Test Suite
 
-FixPilot includes a comprehensive suite of 26 unit and integration tests:
+FixPilot includes a comprehensive suite of 28 unit and integration tests:
 
 ```bash
 pytest tests/ -v
 ```
 
-All 26 test cases validate:
+All 28 test cases validate:
 - Pydantic v2 data models and serialization.
 - Hardened AST security gates (`SecurityASTVisitor`) blocking prohibited imports (`os`, `subprocess`, `ctypes`, `sys`, `eval`, `exec`).
 - Pre-sandbox fast syntax validation (`ast.parse` and `node --check`).
 - Isolated Node.js sandbox runner and JavaScript security controls.
 - Asynchronous SSE queue streaming, event ordering, and 10s heartbeat keep-alives.
 - Multi-tier error classification and heuristic fallbacks.
-- End-to-end sandbox reproduction and patch verification across all 6 scenarios (including the Tavily spotlight Pydantic v2 migration and JavaScript nullish type error).
+- End-to-end sandbox reproduction and patch verification across all 7 scenarios (including the Tavily spotlight Pydantic v2 migration, JavaScript nullish type error, and multi-attempt self-healing retry cascade).
 
 ---
 
@@ -198,6 +198,7 @@ All 26 test cases validate:
 fixpilot-ai/
 ├── LICENSE                          # MIT License
 ├── README.md                        # Documentation & setup guide
+├── SUBMISSION.md                    # Hackathon submission writeup & demo script
 ├── requirements.txt                 # Pinned dependencies
 ├── Dockerfile                       # Polyglot container (Python + Node.js + Git)
 ├── .dockerignore                    # Build exclusion rules
@@ -232,7 +233,7 @@ fixpilot-ai/
 │   ├── style.css
 │   └── app.js
 │
-├── tests/                           # Complete test suite (26 tests)
+├── tests/                           # Complete test suite (28 tests)
 │   ├── test_models.py
 │   ├── test_sandbox.py
 │   ├── test_sandbox_multilang.py    # AST gate & Node.js sandbox tests
@@ -248,7 +249,8 @@ fixpilot-ai/
 │       ├── scenario_import_error.py
 │       ├── scenario_logic_bug.py
 │       ├── scenario_js_type_error.py
-│       └── scenario_modern_api_migration.py # Tavily Live-Docs Spotlight
+│       ├── scenario_modern_api_migration.py # Tavily Live-Docs Spotlight
+│       └── scenario_self_healing_cascade.py # Multi-Attempt Retry Loop
 │
 └── docs/
     ├── ARCHITECTURE.md              # In-depth architectural design

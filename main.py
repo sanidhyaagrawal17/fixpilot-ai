@@ -108,7 +108,8 @@ async def get_scenarios() -> List[Dict[str, str]]:
         "scenario_import_error",
         "scenario_logic_bug",
         "scenario_js_type_error",
-        "scenario_modern_api_migration"
+        "scenario_modern_api_migration",
+        "scenario_self_healing_cascade"
     ]
 
     for mod_name in modules:

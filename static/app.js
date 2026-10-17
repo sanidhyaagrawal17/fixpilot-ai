@@ -150,10 +150,13 @@ document.addEventListener("DOMContentLoaded", () => {
         scenarios.forEach((sc) => {
           const btn = document.createElement("button");
           btn.type = "button";
-          btn.className = "scenario-btn";
+          const label = sc.id.replace("scenario_", "").replace(/_/g, " ");
           if (sc.id === "scenario_modern_api_migration") {
             btn.innerHTML = `<span style="color: #10B981;">✦</span> MODERN API MIGRATION`;
             btn.title = "Tavily Live-Docs Spotlight: Resolves Pydantic v2 BaseSettings migration using real-time web retrieval";
+          } else if (sc.id === "scenario_self_healing_cascade") {
+            btn.innerHTML = `<span style="color: #6366F1;">↻</span> SELF-HEALING RETRY`;
+            btn.title = "Self-Healing Cascade: Multi-attempt KeyError repair revealing hidden ZeroDivisionError";
           } else {
             btn.textContent = label.toUpperCase();
             btn.title = sc.description;

@@ -278,6 +278,23 @@ def _generate_simulation_response(messages: List[Dict[str, str]], model_name: st
                 "suggested_approach": "Add guard clause or optional chaining (user && user.name).",
                 "doc_references": ["https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cant_access_property"]
             })
+        elif "calculate_metrics_batch" in user_content:
+            if "ZeroDivision" in user_content or "division by zero" in user_content:
+                return json.dumps({
+                    "root_cause": "ZeroDivisionError: Division by zero when metrics collection is empty.",
+                    "explanation": "Attempted to compute average via total_score / len(items) when len(items) is zero.",
+                    "affected_code_snippet": "average = total_score / len(items)",
+                    "suggested_approach": "Add guard check for empty or zero-length items list before division.",
+                    "doc_references": ["https://docs.python.org/3/library/exceptions.html#ZeroDivisionError"]
+                })
+            else:
+                return json.dumps({
+                    "root_cause": "KeyError: 'metrics' when accessing payload dictionary.",
+                    "explanation": "Direct subscript payload['metrics'] crashes if the key does not exist.",
+                    "affected_code_snippet": "items = payload['metrics']",
+                    "suggested_approach": "Use safe get() lookup with fallback keys.",
+                    "doc_references": ["https://docs.python.org/3/library/stdtypes.html#dict.get"]
+                })
         return json.dumps({
             "root_cause": "Index/value out of bound or unhandled NoneType access in solution flow.",
             "explanation": "Execution attempted to access an element past the collection boundary or dereferenced a null state without a guard clause.",
@@ -329,6 +346,24 @@ def _generate_simulation_response(messages: List[Dict[str, str]], model_name: st
                     "Changed high = len(arr) to high = len(arr) - 1"
                 ]
             })
+
+        elif "calculate_metrics_batch" in user_content:
+            if "ZeroDivision" in user_content or "division by zero" in user_content:
+                return json.dumps({
+                    "fixed_code": "def calculate_metrics_batch(payload):\n    if not payload:\n        return {'count': 0, 'average': 0.0}\n    items = payload.get('metrics') or payload.get('telemetry', [])\n    if not items:\n        return {'count': 0, 'average': 0.0}\n    total_score = sum(item.get('score', 0) for item in items)\n    average = total_score / len(items)\n    return {\n        'count': len(items),\n        'average': round(average, 2)\n    }\n",
+                    "explanation": "Added zero-division safety guard for empty metric collections per feedback.",
+                    "changes_summary": [
+                        "Added empty collection guard: if not items: return {'count': 0, 'average': 0.0}"
+                    ]
+                })
+            else:
+                return json.dumps({
+                    "fixed_code": "def calculate_metrics_batch(payload):\n    items = (payload.get('metrics') or payload.get('telemetry', [])) if payload else []\n    total_score = sum(item.get('score', 0) for item in items)\n    average = total_score / len(items)\n    return {\n        'count': len(items),\n        'average': round(average, 2)\n    }\n",
+                    "explanation": "Addressed initial KeyError by replacing direct subscript with safe dict lookup.",
+                    "changes_summary": [
+                        "Used payload.get('metrics') or payload.get('telemetry', [])"
+                    ]
+                })
 
         return json.dumps({
             "fixed_code": "# Autonomous fix applied by FixPilot\ndef get_last_item(items):\n    if not items:\n        return None\n    return items[len(items) - 1]\n",

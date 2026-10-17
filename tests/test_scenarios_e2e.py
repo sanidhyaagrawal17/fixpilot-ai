@@ -9,7 +9,8 @@ SCENARIOS = [
     "scenario_import_error",
     "scenario_logic_bug",
     "scenario_js_type_error",
-    "scenario_modern_api_migration"
+    "scenario_modern_api_migration",
+    "scenario_self_healing_cascade"
 ]
 
 
@@ -81,3 +82,46 @@ module.exports = { getUserDisplayName };
     assert res_fixed.exit_code == 0
     assert "ALL JS TESTS PASSED" in res_fixed.output
     assert res_fixed.duration_ms < 1500
+
+
+@pytest.mark.asyncio
+async def test_scenario_self_healing_cascade_multi_attempt_sandbox():
+    """Confirms the self-healing scenario exposes KeyError initially, ZeroDivisionError on Attempt 1, and passes on Attempt 2."""
+    from tests.scenarios.scenario_self_healing_cascade import SOURCE_CODE, TEST_CODE
+    sandbox = CodeSandbox()
+
+    # Initial code fails with KeyError on missing key
+    res_initial = await sandbox.execute_code(SOURCE_CODE, test_code=TEST_CODE, language="python")
+    assert res_initial.passed is False
+    assert res_initial.exit_code != 0
+
+    # Attempt 1 partial fix (fixes KeyError only, leaves empty collection unhandled)
+    attempt1_patch = (
+        "def calculate_metrics_batch(payload):\n"
+        "    items = (payload.get('metrics') or payload.get('telemetry', [])) if payload else []\n"
+        "    total_score = sum(item.get('score', 0) for item in items)\n"
+        "    average = total_score / len(items)\n"
+        "    return {'count': len(items), 'average': round(average, 2)}\n"
+    )
+    res_att1 = await sandbox.execute_code(attempt1_patch, test_code=TEST_CODE, language="python")
+    assert res_att1.passed is False
+    assert res_att1.exit_code != 0
+    assert "ZeroDivisionError" in res_att1.output
+
+    # Attempt 2 complete patch (fixes both KeyError and ZeroDivisionError)
+    attempt2_patch = (
+        "def calculate_metrics_batch(payload):\n"
+        "    if not payload:\n"
+        "        return {'count': 0, 'average': 0.0}\n"
+        "    items = payload.get('metrics') or payload.get('telemetry', [])\n"
+        "    if not items:\n"
+        "        return {'count': 0, 'average': 0.0}\n"
+        "    total_score = sum(item.get('score', 0) for item in items)\n"
+        "    average = total_score / len(items)\n"
+        "    return {'count': len(items), 'average': round(average, 2)}\n"
+    )
+    res_att2 = await sandbox.execute_code(attempt2_patch, test_code=TEST_CODE, language="python")
+    assert res_att2.passed is True
+    assert res_att2.exit_code == 0
+    assert "ALL TESTS PASSED" in res_att2.output
+
