@@ -47,6 +47,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentDiffText = "";
   let currentFullResponse = null;
 
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
   // 1. Health Probe
   async function checkHealth() {
     try {
@@ -150,12 +160,13 @@ document.addEventListener("DOMContentLoaded", () => {
         scenarios.forEach((sc) => {
           const btn = document.createElement("button");
           btn.type = "button";
+          btn.className = "scenario-btn";
           const label = sc.id.replace("scenario_", "").replace(/_/g, " ");
           if (sc.id === "scenario_modern_api_migration") {
-            btn.innerHTML = `<span style="color: #10B981;">✦</span> MODERN API MIGRATION`;
+            btn.innerHTML = `<span class="badge-icon green">✦</span> MODERN API MIGRATION`;
             btn.title = "Tavily Live-Docs Spotlight: Resolves Pydantic v2 BaseSettings migration using real-time web retrieval";
           } else if (sc.id === "scenario_self_healing_cascade") {
-            btn.innerHTML = `<span style="color: #6366F1;">↻</span> SELF-HEALING RETRY`;
+            btn.innerHTML = `<span class="badge-icon indigo">↻</span> SELF-HEALING RETRY`;
             btn.title = "Self-Healing Cascade: Multi-attempt KeyError repair revealing hidden ZeroDivisionError";
           } else {
             btn.textContent = label.toUpperCase();
@@ -220,7 +231,11 @@ document.addEventListener("DOMContentLoaded", () => {
         navigator.clipboard.writeText(currentFixedCode);
         const originalText = copyBtn.textContent;
         copyBtn.textContent = "Copied! ✓";
-        setTimeout(() => { copyBtn.textContent = originalText; }, 2000);
+        copyBtn.classList.add("copied");
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+          copyBtn.classList.remove("copied");
+        }, 2000);
       }
     });
   }
@@ -231,7 +246,11 @@ document.addEventListener("DOMContentLoaded", () => {
         navigator.clipboard.writeText(currentDiffText);
         const originalText = copyDiffBtn.textContent;
         copyDiffBtn.textContent = "Copied Diff! ✓";
-        setTimeout(() => { copyDiffBtn.textContent = originalText; }, 2000);
+        copyDiffBtn.classList.add("copied");
+        setTimeout(() => {
+          copyDiffBtn.textContent = originalText;
+          copyDiffBtn.classList.remove("copied");
+        }, 2000);
       }
     });
   }
@@ -380,9 +399,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="step-meta"><div>RETRY</div></div>
                 <div class="step-body">
                   <div style="font-size:0.75rem; color:var(--accent-orange); font-family:var(--font-mono); margin-bottom:2px">
-                    [ADAPTIVE TAVILY RE-GROUNDING] &bull; Attempt ${parsed.data.attempt}
+                    [ADAPTIVE TAVILY RE-GROUNDING] &bull; Attempt ${escapeHtml(parsed.data.attempt)}
                   </div>
-                  <div class="step-detail">New error detected: <code>${parsed.data.new_error}</code>. Executing delta search: <em>${parsed.data.delta_query}</em></div>
+                  <div class="step-detail">New error detected: <code>${escapeHtml(parsed.data.new_error)}</code>. Executing delta search: <em>${escapeHtml(parsed.data.delta_query)}</em></div>
                 </div>
               `;
               timelineList.appendChild(retryCard);
@@ -419,7 +438,7 @@ document.addEventListener("DOMContentLoaded", () => {
       agentStatePill.querySelector(".status-text").textContent = "Error";
       const errCard = document.createElement("div");
       errCard.className = "step-card retrying";
-      errCard.innerHTML = `<div class="step-body"><strong style="color:#ef4444">Session Error:</strong> ${err.message}</div>`;
+      errCard.innerHTML = `<div class="step-body"><strong style="color:#ef4444">Session Error:</strong> ${escapeHtml(err.message)}</div>`;
       timelineList.appendChild(errCard);
     } finally {
       submitBtn.disabled = false;
@@ -436,10 +455,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return `
           <div class="doc-item-enhanced">
             <div class="doc-header-row">
-              <a class="doc-link" href="${d.url}" target="_blank" rel="noopener">${d.title}</a>
-              <span class="doc-score-pill">${scorePercent}</span>
+              <a class="doc-link" href="${escapeHtml(d.url)}" target="_blank" rel="noopener">${escapeHtml(d.title)}</a>
+              <span class="doc-score-pill">${escapeHtml(scorePercent)}</span>
             </div>
-            <div class="doc-snippet">${d.snippet}</div>
+            <div class="doc-snippet">${escapeHtml(d.snippet)}</div>
           </div>
         `;
       })
@@ -450,20 +469,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const card = document.createElement("div");
     card.className = `step-card ${step.status}`;
 
-    const modelDisplay = step.model_used.includes("nemotron")
-      ? step.model_used.split("/").pop()
-      : step.model_used;
+    const rawModel = step.model_used || "";
+    const modelDisplay = rawModel.includes("nemotron")
+      ? rawModel.split("/").pop()
+      : rawModel;
 
     card.innerHTML = `
       <div class="step-meta">
-        <div>#${step.step}</div>
-        <div style="font-size:0.7rem; color:var(--text-muted)">${step.duration_ms}ms</div>
+        <div>#${escapeHtml(step.step)}</div>
+        <div style="font-size:0.7rem; color:var(--text-muted)">${escapeHtml(step.duration_ms)}ms</div>
       </div>
       <div class="step-body">
         <div style="font-size:0.75rem; color:var(--accent-blue); font-family:var(--font-mono); margin-bottom:2px">
-          [${step.status.toUpperCase()}] &bull; ${modelDisplay}
+          [${escapeHtml((step.status || "").toUpperCase())}] &bull; ${escapeHtml(modelDisplay)}
         </div>
-        <div class="step-detail">${step.detail}</div>
+        <div class="step-detail">${escapeHtml(step.detail)}</div>
       </div>
     `;
     timelineList.appendChild(card);
@@ -489,8 +509,8 @@ document.addEventListener("DOMContentLoaded", () => {
       currentDiffText = result.fix.diff;
 
       fixExplanation.innerHTML = `
-        <strong>Root Cause Diagnosis:</strong> ${result.analysis ? result.analysis.root_cause : ''}<br>
-        <strong>Fix Explanation:</strong> ${result.fix.explanation}
+        <strong>Root Cause Diagnosis:</strong> ${result.analysis ? escapeHtml(result.analysis.root_cause) : ''}<br>
+        <strong>Fix Explanation:</strong> ${result.fix ? escapeHtml(result.fix.explanation) : ''}
       `;
 
       diffOutput.innerHTML = renderColoredDiff(result.fix.diff);

@@ -311,43 +311,68 @@ kbd {
 /* Scenarios */
 .scenario-selector {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.45rem;
+  width: 100%;
 }
 
 .scenario-selector .label {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   color: var(--text-muted);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .scenario-buttons {
   display: flex;
-  gap: 0.35rem;
+  gap: 0.45rem;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .scenario-btn {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   color: var(--text-main);
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  font-size: 0.71875rem;
+  padding: 0.32rem 0.65rem;
+  border-radius: 5px;
   cursor: pointer;
   transition: all 0.15s ease;
   font-family: var(--font-mono);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
 }
 
 .scenario-btn:hover {
   border-color: var(--border-active);
   background: #202020;
+  color: #ffffff;
 }
 
 .scenario-btn.active {
   background: #262626;
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.45);
   color: #ffffff;
   font-weight: 600;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.08);
+}
+
+.scenario-btn .badge-icon {
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.scenario-btn .badge-icon.green {
+  color: #10B981;
+}
+
+.scenario-btn .badge-icon.indigo {
+  color: #6366F1;
 }
 
 /* Form inputs */

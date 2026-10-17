@@ -38,5 +38,7 @@ jobs:
           npm --version
 
       - name: Run test suite with Pytest
+        env:
+          PYTHONPATH: .
         run: |
-          pytest tests/ -v
+          python -m pytest tests/ -v
