@@ -154,7 +154,7 @@ FixPilot includes a comprehensive suite of unit and integration tests:
 pytest tests/ -v
 ```
 
-All 13 test suites validate models, classification, sandboxed execution, diff calculation, end-to-end agent remediation, and API endpoints.
+All 18 unit and integration tests validate models, classification, multi-language sandboxed execution, AST security gates, diff calculation, end-to-end agent remediation, async SSE streaming, and API endpoints.
 
 ---
 
@@ -198,6 +198,8 @@ fixpilot-ai/
 ├── tests/                           # Complete test suite
 │   ├── test_models.py
 │   ├── test_sandbox.py
+│   ├── test_sandbox_multilang.py    # AST gate & Node.js sandbox tests
+│   ├── test_streaming.py            # SSE async queue & heartbeat tests
 │   ├── test_classifier.py
 │   ├── test_fixer.py
 │   ├── test_agent.py
@@ -206,7 +208,8 @@ fixpilot-ai/
 │       ├── scenario_index_error.py
 │       ├── scenario_type_error.py
 │       ├── scenario_import_error.py
-│       └── scenario_logic_bug.py
+│       ├── scenario_logic_bug.py
+│       └── scenario_js_type_error.py
 │
 └── docs/
     ├── ARCHITECTURE.md              # In-depth architectural design
