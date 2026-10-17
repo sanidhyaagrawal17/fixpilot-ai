@@ -5,6 +5,13 @@
 > **Repository**: [https://github.com/sanidhyaagrawal17/fixpilot-ai](https://github.com/sanidhyaagrawal17/fixpilot-ai)  
 > **Live Demo Web App**: `http://localhost:8000` (Docker container ready)
 
+[![FixPilot CI](https://github.com/sanidhyaagrawal17/fixpilot-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/sanidhyaagrawal17/fixpilot-ai/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/Tests-28%2F28%20Passing-10B981?style=flat-square&logo=pytest)](https://github.com/sanidhyaagrawal17/fixpilot-ai)
+[![NVIDIA Nemotron-3](https://img.shields.io/badge/NVIDIA%20Nemotron--3-Nano%2030B%20%E2%80%A2%20Super%20120B%20%E2%80%A2%20Ultra%20550B-76B900?style=flat-square&logo=nvidia)](https://build.nvidia.com)
+[![Tavily Search](https://img.shields.io/badge/Tavily%20Search-Adaptive%20Grounding-0EA5E9?style=flat-square)](https://tavily.com)
+[![Sandbox](https://img.shields.io/badge/Sandbox-Python%20AST%20%2B%20Node.js-6366F1?style=flat-square&logo=nodedotjs)](https://github.com/sanidhyaagrawal17/fixpilot-ai)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
 ---
 
 ## ⚡ 1. Elevator Pitch (48 Words)

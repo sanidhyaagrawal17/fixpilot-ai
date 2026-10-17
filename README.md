@@ -1,10 +1,13 @@
 # 🔧 FixPilot — Autonomous Code Debugging Agent
 
+[![FixPilot CI](https://github.com/sanidhyaagrawal17/fixpilot-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/sanidhyaagrawal17/fixpilot-ai/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/Tests-28%2F28%20Passing-10B981?style=flat-square&logo=pytest)](https://github.com/sanidhyaagrawal17/fixpilot-ai)
+[![NVIDIA Nemotron-3](https://img.shields.io/badge/NVIDIA%20Nemotron--3-Nano%2030B%20%E2%80%A2%20Super%20120B%20%E2%80%A2%20Ultra%20550B-76B900?style=flat-square&logo=nvidia)](https://build.nvidia.com)
+[![Tavily Search](https://img.shields.io/badge/Tavily%20Search-Adaptive%20Grounding-0EA5E9?style=flat-square)](https://tavily.com)
+[![Sandbox](https://img.shields.io/badge/Sandbox-Python%20AST%20%2B%20Node.js-6366F1?style=flat-square&logo=nodedotjs)](https://github.com/sanidhyaagrawal17/fixpilot-ai)
 [![Hackathon](https://img.shields.io/badge/Nebius%20x%20NVIDIA-Global%20AI%20Hackathon-76B900?style=flat-square&logo=nvidia)](https://nebiusglobalaihackathon.devpost.com/)
 [![Track](https://img.shields.io/badge/Track-Coding%20%26%20Agentic%20Engineering-blue?style=flat-square)](https://nebiusglobalaihackathon.devpost.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-blue?style=flat-square&logo=python)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker)](https://www.docker.com/)
 
 > **FixPilot** is an autonomous code debugging and repair agent built on open infrastructure. Given an error traceback and faulty source code (or GitHub repository URL), FixPilot reasons about the root cause using **NVIDIA Nemotron** models on **Nebius Token Factory**, grounds its diagnosis with **Tavily Web Search**, synthesizes surgically minimal unified diffs, and validates the repair in an isolated execution sandbox.
