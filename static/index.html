@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FixPilot — Autonomous Code Debugging Agent</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -21,17 +22,58 @@
         </div>
       </div>
       <div class="nav-badges">
+        <button type="button" class="btn-guide" id="btn-open-guide" aria-label="Open instructions">
+          <span class="guide-icon">?</span>
+          <span>Instructions & Shortcuts</span>
+        </button>
         <span class="badge" id="backend-status">● Connecting...</span>
         <span class="badge highlight">Coding & Agentic Track</span>
       </div>
     </header>
+
+    <!-- Collapsible Quick Start Guide Banner -->
+    <section class="guide-banner" id="guide-banner">
+      <div class="guide-header">
+        <div class="guide-title">
+          <span class="guide-badge">QUICK START GUIDE</span>
+          <h3>Three Ways to Debug with FixPilot</h3>
+        </div>
+        <button type="button" class="btn-guide-toggle" id="btn-toggle-guide" aria-label="Toggle guide view">
+          Hide Guide
+        </button>
+      </div>
+      <div class="guide-grid" id="guide-grid">
+        <div class="guide-card">
+          <div class="card-step">MODE 01</div>
+          <h4>One-Click Scenarios</h4>
+          <p>Pick a pre-loaded real-world failure below (IndexError, TypeError, ImportError, etc.) to immediately witness autonomous multi-model remediation in action.</p>
+        </div>
+        <div class="guide-card">
+          <div class="card-step">MODE 02</div>
+          <h4>Custom Code & Tests</h4>
+          <p>Paste any Python stack trace and faulty snippet. Provide test assertions in the Test Harness so FixPilot's sandbox verifies the fix passes before presenting it.</p>
+        </div>
+        <div class="guide-card">
+          <div class="card-step">MODE 03</div>
+          <h4>GitHub Repositories</h4>
+          <p>Enter a public GitHub repository URL alongside an error trace. FixPilot clones and navigates multi-file context to isolate the bug.</p>
+        </div>
+      </div>
+      <div class="guide-footer-tip" id="guide-tip">
+        <span class="tip-icon">⚡</span>
+        <span>Keyboard Shortcut: Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> (or <kbd>⌘</kbd> + <kbd>Enter</kbd>) from any field to launch the autonomous debugger.</span>
+      </div>
+    </section>
 
     <!-- Main Workspace Grid -->
     <main class="grid-layout">
       <!-- Left Column: Input & Controls -->
       <section class="panel input-panel">
         <div class="panel-header">
-          <h2>Diagnostic Input</h2>
+          <div>
+            <h2>Diagnostic Input</h2>
+            <p class="panel-subtitle">Provide failure telemetry or pick a scenario to trigger the autonomous loop</p>
+          </div>
           <div class="scenario-selector">
             <span class="label">Quick Scenarios:</span>
             <div class="scenario-buttons" id="scenario-btn-group">
@@ -43,26 +85,31 @@
         <form id="debug-form" class="form-body">
           <div class="field-group">
             <div class="field-header">
-              <label for="error-traceback">Error Traceback / Failure Output <span class="required">*</span></label>
-              <button type="button" class="btn-text" id="clear-traceback">Clear</button>
+              <label for="error-traceback">
+                Error Traceback / Failure Output <span class="required">*</span>
+              </label>
+              <button type="button" class="btn-text" id="clear-traceback">Clear Form</button>
             </div>
-            <textarea id="error-traceback" rows="6" placeholder="Paste python traceback, exception, or test failure..." required spellcheck="false"></textarea>
+            <p class="field-helper">Paste python traceback, exception, or test failure output</p>
+            <textarea id="error-traceback" rows="6" placeholder="Traceback (most recent call last):&#10;  File &quot;main.py&quot;, line 4, in <module>&#10;    item = items[len(items)]&#10;IndexError: list index out of range" required spellcheck="false"></textarea>
           </div>
 
           <div class="field-group">
             <div class="field-header">
               <label for="source-code">Faulty Source Code</label>
-              <span class="hint">or paste GitHub repo below</span>
+              <span class="hint">Function or script containing the bug</span>
             </div>
-            <textarea id="source-code" rows="9" placeholder="def broken_function(): ..." spellcheck="false"></textarea>
+            <p class="field-helper">The implementation code to be analyzed and surgically repaired</p>
+            <textarea id="source-code" rows="8" placeholder="def broken_function(items):&#10;    return items[len(items)]" spellcheck="false"></textarea>
           </div>
 
           <div class="field-group">
             <div class="field-header">
-              <label for="test-code">Test Harness / Validation Assertions</label>
-              <span class="hint">Optional: sandbox runs this to verify fix</span>
+              <label for="test-code">Test Harness / Verification Assertions</label>
+              <span class="hint">Recommended for 100% verified fix</span>
             </div>
-            <textarea id="test-code" rows="5" placeholder="def test_fix():&#10;    assert broken_function() == expected" spellcheck="false"></textarea>
+            <p class="field-helper">Executed in our isolated sandbox; FixPilot iterates until all assertions pass</p>
+            <textarea id="test-code" rows="5" placeholder="def test_fix():&#10;    assert broken_function([1, 2, 3]) == 3" spellcheck="false"></textarea>
           </div>
 
           <div class="field-group">
@@ -70,13 +117,15 @@
               <label for="github-url">GitHub Repository URL</label>
               <span class="hint">Optional clone target</span>
             </div>
-            <input type="url" id="github-url" placeholder="https://github.com/owner/repository" autocomplete="off">
+            <p class="field-helper">Point FixPilot to an open-source repository for multi-file root-cause analysis</p>
+            <input type="url" id="github-url" placeholder="https://github.com/sanidhyaagrawal17/career-copilot-ai" autocomplete="off">
           </div>
 
           <div class="action-footer">
             <button type="submit" id="btn-submit" class="btn-primary">
               <span class="btn-icon">⚡</span>
               <span class="btn-label">Run Autonomous Debugger</span>
+              <span class="btn-shortcut">Ctrl+Enter</span>
             </button>
           </div>
         </form>
@@ -85,10 +134,34 @@
       <!-- Right Column: Agent Progression & Fix Output -->
       <section class="panel output-panel">
         <div class="panel-header">
-          <h2>Agent Execution & Telemetry</h2>
+          <div>
+            <h2>Agent Execution & Telemetry</h2>
+            <p class="panel-subtitle">Multi-model reasoning loop: Classify ➔ Ground ➔ Diagnose ➔ Synthesize & Test</p>
+          </div>
           <div class="status-summary" id="agent-state-pill">
             <span class="status-indicator"></span>
             <span class="status-text">Ready</span>
+          </div>
+        </div>
+
+        <!-- Live Sponsor & Model Telemetry Bar -->
+        <div class="telemetry-bar" id="telemetry-bar" style="display: none;">
+          <div class="telemetry-left">
+            <span class="telemetry-provider-badge" id="telemetry-provider">NVIDIA API • Direct</span>
+            <div class="telemetry-chips" id="telemetry-chips">
+              <span class="chip" id="chip-classify">Nano: <span class="chip-val">-</span></span>
+              <span class="chip-arrow">➔</span>
+              <span class="chip" id="chip-ground">Tavily: <span class="chip-val">-</span></span>
+              <span class="chip-arrow">➔</span>
+              <span class="chip" id="chip-diagnose">Ultra: <span class="chip-val">-</span></span>
+              <span class="chip-arrow">➔</span>
+              <span class="chip" id="chip-synthesize">Super: <span class="chip-val">-</span></span>
+              <span class="chip-arrow">➔</span>
+              <span class="chip" id="chip-verify">Sandbox: <span class="chip-val">-</span></span>
+            </div>
+          </div>
+          <div class="telemetry-right">
+            <span class="verification-badge" id="verification-badge">SANDBOX READY</span>
           </div>
         </div>
 
@@ -99,7 +172,46 @@
             <span class="execution-time" id="total-time"></span>
           </div>
           <div class="timeline-steps" id="timeline-list">
-            <div class="timeline-empty">Submit an error or select a quick scenario to begin the agent loop.</div>
+            <!-- Idle Pipeline Walkthrough -->
+            <div class="pipeline-idle-preview" id="idle-preview">
+              <div class="preview-header">
+                <h4>Autonomous 4-Tier Debugging Engine</h4>
+                <p>When you start a session, FixPilot coordinates NVIDIA models and Tavily search through an iterative feedback loop:</p>
+              </div>
+              <div class="pipeline-stages">
+                <div class="stage-item">
+                  <div class="stage-num">1</div>
+                  <div class="stage-content">
+                    <span class="stage-title">Classify Error &bull; <small class="tier-nano">Nemotron 3 Nano</small></span>
+                    <span class="stage-desc">Lightweight analysis categorizes syntax, type, import, or logic errors and isolates the affected file/line.</span>
+                  </div>
+                </div>
+                <div class="stage-item">
+                  <div class="stage-num">2</div>
+                  <div class="stage-content">
+                    <span class="stage-title">Ground in Real Docs &bull; <small class="tier-tavily">Tavily Search API</small></span>
+                    <span class="stage-desc">Queries live StackOverflow solutions and official language docs for verified remediation patterns.</span>
+                  </div>
+                </div>
+                <div class="stage-item">
+                  <div class="stage-num">3</div>
+                  <div class="stage-content">
+                    <span class="stage-title">Diagnose Root Cause &bull; <small class="tier-ultra">Nemotron 3 Ultra 550B</small></span>
+                    <span class="stage-desc">Frontier reasoning traces execution flow, null states, and boundary conditions to explain the exact defect.</span>
+                  </div>
+                </div>
+                <div class="stage-item">
+                  <div class="stage-num">4</div>
+                  <div class="stage-content">
+                    <span class="stage-title">Synthesize & Sandbox Test &bull; <small class="tier-super">Nemotron 3 Super 120B + Sandbox</small></span>
+                    <span class="stage-desc">Generates surgical code fixes and validates in an isolated execution sandbox until 100% verified.</span>
+                  </div>
+                </div>
+              </div>
+              <div class="preview-prompt">
+                <span>👈 Select any <strong>Quick Scenario</strong> on the left or paste your code to begin.</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -116,7 +228,9 @@
           <div class="section-title">
             <span>Verified Fix & Diff</span>
             <div class="fix-actions">
+              <button type="button" class="btn-secondary" id="btn-copy-diff">Copy Diff (.patch)</button>
               <button type="button" class="btn-secondary" id="btn-copy-code">Copy Fixed Code</button>
+              <button type="button" class="btn-secondary" id="btn-download-report">Download Report (.json)</button>
             </div>
           </div>
 
@@ -155,6 +269,66 @@
         <a href="https://github.com/sanidhyaagrawal17" target="_blank" rel="noopener">Sanidhya Agrawal</a>
       </div>
     </footer>
+  </div>
+
+  <!-- Instructions & Architecture Modal -->
+  <div class="modal-backdrop" id="instructions-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span class="modal-icon">📖</span>
+          <h3>FixPilot User Guide & Reference</h3>
+        </div>
+        <button type="button" class="modal-close-btn" id="btn-close-modal" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <section class="modal-section">
+          <h4>How to Use FixPilot</h4>
+          <ol class="modal-list">
+            <li><strong>Option A — 1-Click Scenarios:</strong> Click any scenario pill at the top of the input panel (e.g. <code>INDEX ERROR</code> or <code>IMPORT ERROR</code>) to instantly load a real failure and start debugging.</li>
+            <li><strong>Option B — Your Own Code:</strong> Paste your exception traceback into the first box, the broken function in the second box, and optionally a unit test in the third box.</li>
+            <li><strong>Option C — GitHub Repositories:</strong> Provide a public GitHub URL and a traceback to allow FixPilot to inspect the entire repository tree.</li>
+          </ol>
+        </section>
+
+        <section class="modal-section">
+          <h4>Writing Effective Test Harnesses</h4>
+          <p>The Test Harness gives FixPilot an objective target. Write standard Python assertions that exercise the fixed function:</p>
+          <pre class="modal-code"><code>def test_my_function():
+    result = my_function([1, 2, 3])
+    assert result == 3, f"Expected 3, got {result}"</code></pre>
+          <p>FixPilot executes this test inside its isolated execution sandbox. If the fix fails, it loops back with the new error message (up to 3 iterations) until all assertions pass.</p>
+        </section>
+
+        <section class="modal-section">
+          <h4>NVIDIA Model Cascade & Escalating Timeouts</h4>
+          <ul class="modal-list">
+            <li><strong>Nemotron 3 Nano Omni:</strong> Sub-second error classification and line isolation.</li>
+            <li><strong>Tavily Search API:</strong> Real-time retrieval of StackOverflow and official docs.</li>
+            <li><strong>Nemotron 3 Ultra 550B:</strong> Frontier reasoning for execution flow analysis and deep diagnosis.</li>
+            <li><strong>Nemotron 3 Super 120B:</strong> High-precision code generation and unified diff synthesis.</li>
+            <li><strong>Resilient Waterfall:</strong> 3-attempt escalating timeouts (30s ➔ 60s ➔ 90s) per provider.</li>
+          </ul>
+        </section>
+
+        <section class="modal-section">
+          <h4>Keyboard Shortcuts</h4>
+          <div class="shortcuts-grid">
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Run Autonomous Debugger</span>
+              <span class="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd></span>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Close Modal Dialog</span>
+              <span class="shortcut-keys"><kbd>Esc</kbd></span>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-primary" id="btn-modal-gotit">Got It</button>
+      </div>
+    </div>
   </div>
 
   <script src="/static/app.js"></script>

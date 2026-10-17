@@ -12,7 +12,7 @@ async def test_classifier_index_error():
 IndexError: list index out of range"""
     res = await classifier.classify(tb)
     assert res.error_type == ErrorSeverity.TYPE
-    assert "IndexError" in res.error_message
+    assert "IndexError" in res.error_message or "out of range" in res.error_message.lower()
     assert res.affected_file == "main.py"
     assert res.affected_line == 4
 

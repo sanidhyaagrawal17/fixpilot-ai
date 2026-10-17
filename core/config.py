@@ -8,7 +8,11 @@ PROMPTS_DIR = BASE_DIR / "prompts"
 
 
 class Settings(BaseSettings):
-    # Nebius Token Factory Configuration (Primary)
+    # NVIDIA API (build.nvidia.com - Primary Provider)
+    NVIDIA_API_KEY: Optional[str] = None
+    NVIDIA_BASE_URL: str = "https://integrate.api.nvidia.com/v1"
+
+    # Nebius Token Factory Configuration
     NEBIUS_API_KEY: Optional[str] = None
     NEBIUS_BASE_URL: str = "https://api.studio.nebius.com/v1"
 
@@ -20,15 +24,18 @@ class Settings(BaseSettings):
     TAVILY_API_KEY: Optional[str] = None
 
     # Model Configuration (Nemotron 3 Family)
-    MODEL_CLASSIFY: str = "nvidia/nemotron-3-nano"
-    MODEL_ANALYZE: str = "nvidia/nemotron-3-ultra"
-    MODEL_FIX: str = "nvidia/nemotron-3-super"
-    MODEL_VALIDATE: str = "nvidia/nemotron-3-nano"
+    MODEL_CLASSIFY: str = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"
+    MODEL_ANALYZE: str = "nvidia/nemotron-3-ultra-550b-a55b"
+    MODEL_FIX: str = "nvidia/nemotron-3-super-120b-a12b"
+    MODEL_VALIDATE: str = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"
 
     # Fallback model mappings (e.g. for OpenRouter or alternate providers)
     FALLBACK_MODEL_CLASSIFY: str = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
-    FALLBACK_MODEL_ANALYZE: str = "nvidia/nemotron-3-ultra"
-    FALLBACK_MODEL_FIX: str = "nvidia/nemotron-3-super"
+    FALLBACK_MODEL_ANALYZE: str = "nvidia/nemotron-3-ultra-550b-a55b:free"
+    FALLBACK_MODEL_FIX: str = "nvidia/nemotron-3-super-120b-a12b:free"
+
+    # Escalating timeout sequence (seconds) - per provider
+    LLM_TIMEOUT_SEQUENCE: str = "30,60,90"
 
     # Agent Loop Parameters
     MAX_RETRIES: int = 3

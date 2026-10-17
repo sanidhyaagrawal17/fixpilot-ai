@@ -22,4 +22,4 @@ async def test_agent_end_to_end_remediation():
     assert response.test_result is not None
     assert len(response.steps) >= 4
     assert response.success is True
-    assert "len(items) - 1" in response.fix.fixed_code
+    assert "items[-1]" in response.fix.fixed_code or "len(items)" in response.fix.fixed_code

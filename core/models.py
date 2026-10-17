@@ -53,6 +53,8 @@ class DocReference(BaseModel):
     title: str
     url: str
     snippet: str
+    score: Optional[float] = None
+    id: Optional[str] = None
 
 
 class AnalysisResult(BaseModel):
@@ -101,3 +103,4 @@ class DebugResponse(BaseModel):
     total_duration_ms: int = 0
     models_used: List[str] = Field(default_factory=list)
     doc_references: List[DocReference] = Field(default_factory=list)
+    telemetry: Optional[dict] = Field(default_factory=dict)

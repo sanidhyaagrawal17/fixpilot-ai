@@ -113,6 +113,13 @@ class CodeFixer:
             fixed = source_code.replace("from utils.helper import", "from utils.helpers import")
             changes.append("Corrected import path to utils.helpers")
             explanation = "Resolved ModuleNotFoundError by pointing to correct module."
+        elif "user.name.toUpperCase()" in source_code:
+            fixed = source_code.replace(
+                "return user.name.toUpperCase();",
+                "return (user && user.name) ? user.name.toUpperCase() : '';"
+            )
+            changes.append("Added nullish check before accessing user.name in JavaScript")
+            explanation = "Prevented TypeError by guarding against null and undefined user objects."
 
         diff = compute_unified_diff(source_code, fixed, filename=filename)
         return FixResult(

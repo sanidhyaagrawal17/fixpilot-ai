@@ -68,13 +68,15 @@
 
 ---
 
-## 🤖 NVIDIA Models on Nebius Token Factory
+## 🤖 NVIDIA Models & Multi-Tier Provider Cascade
+
+FixPilot connects directly to the official **NVIDIA API** (`integrate.api.nvidia.com`), with cascading fallbacks to **Nebius Token Factory**, **OpenRouter**, and deterministic local simulation. Calls employ escalating timeouts (30s → 60s → 90s) to guarantee resilience under heavy reasoning loads:
 
 | Step | Model Name | Primary Task | Reasoning Tier |
 |---|---|---|---|
-| **Classification** | `nvidia/nemotron-3-nano` | Categorize syntax, type, import, or runtime errors | Fast & Lightweight |
-| **Analysis** | `nvidia/nemotron-3-ultra` | Deep execution flow diagnosis and root-cause identification | Frontier Reasoning |
-| **Synthesis** | `nvidia/nemotron-3-super` | Generate surgical code fixes and unified diffs | High-Accuracy Code Generation |
+| **Classification** | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` | Categorize syntax, type, import, or runtime errors | Fast & Lightweight |
+| **Analysis** | `nvidia/nemotron-3-ultra-550b-a55b` | Deep execution flow diagnosis and root-cause identification | Frontier Reasoning |
+| **Synthesis** | `nvidia/nemotron-3-super-120b-a12b` | Generate surgical code fixes and unified diffs | High-Accuracy Code Generation |
 | **Grounding** | Tavily Search API | Contextual documentation & StackOverflow lookup | Real-Time Web Grounding |
 
 ---
@@ -104,12 +106,15 @@ cp .env.example .env
 
 Edit `.env` with your API keys:
 ```env
-# Nebius Token Factory (from dev.nebius.com/builders)
-NEBIUS_API_KEY=your_nebius_api_key_here
-NEBIUS_BASE_URL=https://api.studio.nebius.com/v1
+# NVIDIA API (build.nvidia.com - Primary Provider)
+NVIDIA_API_KEY=your_nvidia_api_key_here
+NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
 
 # Tavily Search API (from tavily.com)
 TAVILY_API_KEY=your_tavily_api_key_here
+
+# Optional: Nebius Token Factory
+NEBIUS_API_KEY=your_nebius_api_key_here
 
 # Optional: OpenRouter fallback
 OPENROUTER_API_KEY=your_openrouter_api_key_here

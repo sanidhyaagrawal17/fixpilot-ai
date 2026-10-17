@@ -50,6 +50,7 @@ async def health_check() -> Dict[str, Any]:
             "validate": settings.MODEL_VALIDATE
         },
         "providers": {
+            "nvidia_api": bool(settings.NVIDIA_API_KEY and not settings.NVIDIA_API_KEY.startswith("your_")),
             "nebius_token_factory": bool(settings.NEBIUS_API_KEY and not settings.NEBIUS_API_KEY.startswith("your_")),
             "openrouter_fallback": bool(settings.OPENROUTER_API_KEY and not settings.OPENROUTER_API_KEY.startswith("your_")),
             "tavily_search": bool(settings.TAVILY_API_KEY and not settings.TAVILY_API_KEY.startswith("your_"))
@@ -82,7 +83,7 @@ async def debug_code_stream(request: DebugRequest):
 
     async def event_generator():
         async for payload in agent.run_streaming(request):
-            yield f"data: {payload}\n\n"
+            yield payload
 
     return StreamingResponse(
         event_generator(),
@@ -105,7 +106,8 @@ async def get_scenarios() -> List[Dict[str, str]]:
         "scenario_index_error",
         "scenario_type_error",
         "scenario_import_error",
-        "scenario_logic_bug"
+        "scenario_logic_bug",
+        "scenario_js_type_error"
     ]
 
     for mod_name in modules:
