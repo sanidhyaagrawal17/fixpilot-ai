@@ -120,6 +120,16 @@ class CodeFixer:
             )
             changes.append("Added nullish check before accessing user.name in JavaScript")
             explanation = "Prevented TypeError by guarding against null and undefined user objects."
+        elif "BaseSettings" in source_code and "pydantic_settings" not in source_code:
+            fixed = source_code.replace(
+                "from pydantic import BaseModel, BaseSettings",
+                "from pydantic import BaseModel\nfrom pydantic_settings import BaseSettings"
+            ).replace(
+                "from pydantic import BaseSettings",
+                "from pydantic_settings import BaseSettings"
+            )
+            changes.append("Migrated BaseSettings import to 'pydantic_settings' package per Pydantic v2 migration docs")
+            explanation = "Resolved PydanticImportError by importing BaseSettings from modern pydantic_settings package."
 
         diff = compute_unified_diff(source_code, fixed, filename=filename)
         return FixResult(

@@ -89,7 +89,7 @@ async def debug_code_stream(request: DebugRequest):
         event_generator(),
         media_type="text/event-stream",
         headers={
-            "Cache-Control": "no-cache",
+            "Cache-Control": "no-cache, no-transform",
             "Connection": "keep-alive",
             "X-Accel-Buffering": "no"
         }
@@ -107,7 +107,8 @@ async def get_scenarios() -> List[Dict[str, str]]:
         "scenario_type_error",
         "scenario_import_error",
         "scenario_logic_bug",
-        "scenario_js_type_error"
+        "scenario_js_type_error",
+        "scenario_modern_api_migration"
     ]
 
     for mod_name in modules:

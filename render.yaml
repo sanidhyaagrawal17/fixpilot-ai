@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: fixpilot-ai
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: NVIDIA_API_KEY
+        sync: false
+      - key: NVIDIA_BASE_URL
+        value: https://integrate.api.nvidia.com/v1
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: NEBIUS_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: MODEL_CLASSIFY
+        value: nvidia/nemotron-3-nano-omni-30b-a3b-reasoning
+      - key: MODEL_ANALYZE
+        value: nvidia/nemotron-3-ultra-550b-a55b
+      - key: MODEL_FIX
+        value: nvidia/nemotron-3-super-120b-a12b
+      - key: MAX_RETRIES
+        value: 3
+      - key: SANDBOX_TIMEOUT
+        value: 30
+    healthCheckPath: /api/health

@@ -151,9 +151,13 @@ document.addEventListener("DOMContentLoaded", () => {
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "scenario-btn";
-          const label = sc.id.replace("scenario_", "").replace(/_/g, " ");
-          btn.textContent = label.toUpperCase();
-          btn.title = sc.description;
+          if (sc.id === "scenario_modern_api_migration") {
+            btn.innerHTML = `<span style="color: #10B981;">✦</span> MODERN API MIGRATION`;
+            btn.title = "Tavily Live-Docs Spotlight: Resolves Pydantic v2 BaseSettings migration using real-time web retrieval";
+          } else {
+            btn.textContent = label.toUpperCase();
+            btn.title = sc.description;
+          }
           btn.addEventListener("click", () => {
             document.querySelectorAll(".scenario-btn").forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");

@@ -262,6 +262,22 @@ def _generate_simulation_response(messages: List[Dict[str, str]], model_name: st
         })
 
     elif "ultra" in model_name or "analyze" in model_name:
+        if "BaseSettings" in user_content or "PydanticImportError" in user_content:
+            return json.dumps({
+                "root_cause": "PydanticImportError: BaseSettings has moved to the pydantic-settings package in Pydantic v2.",
+                "explanation": "Pydantic v2 extracted BaseSettings into a dedicated library. Code must import from pydantic_settings.",
+                "affected_code_snippet": "from pydantic import BaseModel, BaseSettings",
+                "suggested_approach": "Import BaseSettings from pydantic_settings instead of pydantic.",
+                "doc_references": ["https://docs.pydantic.dev/latest/migration/"]
+            })
+        elif "Cannot read properties" in user_content or "getUserDisplayName" in user_content:
+            return json.dumps({
+                "root_cause": "TypeError: Cannot read properties of undefined in JavaScript execution flow.",
+                "explanation": "Function attempted to read property 'name' on a null or undefined user parameter without a guard.",
+                "affected_code_snippet": "return user.name.toUpperCase();",
+                "suggested_approach": "Add guard clause or optional chaining (user && user.name).",
+                "doc_references": ["https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cant_access_property"]
+            })
         return json.dumps({
             "root_cause": "Index/value out of bound or unhandled NoneType access in solution flow.",
             "explanation": "Execution attempted to access an element past the collection boundary or dereferenced a null state without a guard clause.",
@@ -272,6 +288,48 @@ def _generate_simulation_response(messages: List[Dict[str, str]], model_name: st
 
     else:
         # Super / Fixer
+        if "BaseSettings" in user_content:
+            return json.dumps({
+                "fixed_code": "from pydantic import BaseModel\nfrom pydantic_settings import BaseSettings\n\nclass ServiceConfig(BaseSettings):\n    service_name: str = \"FixPilot Autonomous Engine\"\n    api_version: str = \"v1\"\n    max_concurrency: int = 16\n\ndef load_service_config():\n    return ServiceConfig()\n",
+                "explanation": "Migrated BaseSettings import from 'pydantic' to modern 'pydantic_settings' package per Pydantic v2 documentation.",
+                "changes_summary": [
+                    "Imported BaseSettings from pydantic_settings",
+                    "Maintained BaseModel import from pydantic"
+                ]
+            })
+        elif "getUserDisplayName" in user_content or "user.name.toUpperCase" in user_content:
+            return json.dumps({
+                "fixed_code": "function getUserDisplayName(user) {\n    if (!user || !user.name) {\n        return '';\n    }\n    return user.name.toUpperCase();\n}\n\nmodule.exports = { getUserDisplayName };\n",
+                "explanation": "Added null and undefined safety guard before accessing user.name.",
+                "changes_summary": [
+                    "Added nullish check: if (!user || !user.name) return '';"
+                ]
+            })
+        elif "process_user_profile" in user_content:
+            return json.dumps({
+                "fixed_code": "def process_user_profile(user_record):\n    if not user_record or \"name\" not in user_record:\n        return \"UNKNOWN\"\n    return user_record[\"name\"].upper()\n",
+                "explanation": "Added guard clause to handle None or missing user record safely.",
+                "changes_summary": [
+                    "Added null check for user_record"
+                ]
+            })
+        elif "calculate_circle_area" in user_content or "math_tools" in user_content:
+            return json.dumps({
+                "fixed_code": "import math\n\ndef calculate_circle_area(radius):\n    return math.pi * (radius ** 2)\n",
+                "explanation": "Imported standard library math module instead of nonexistent math_tools.",
+                "changes_summary": [
+                    "Changed import math_tools to import math"
+                ]
+            })
+        elif "binary_search" in user_content:
+            return json.dumps({
+                "fixed_code": "def binary_search(arr, target):\n    low = 0\n    high = len(arr) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1\n",
+                "explanation": "Fixed binary search boundary initialization by setting high to len(arr) - 1.",
+                "changes_summary": [
+                    "Changed high = len(arr) to high = len(arr) - 1"
+                ]
+            })
+
         return json.dumps({
             "fixed_code": "# Autonomous fix applied by FixPilot\ndef get_last_item(items):\n    if not items:\n        return None\n    return items[len(items) - 1]\n",
             "explanation": "Corrected off-by-one index error by referencing len(items) - 1 and added safety guard for empty input.",

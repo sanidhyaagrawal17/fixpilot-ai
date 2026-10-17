@@ -1,0 +1,13 @@
+.venv/
+.git/
+__pycache__/
+.pytest_cache/
+.env
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+fixpilot_sandbox_*
+.idea/
+.vscode/
+tests/.pytest_cache/
