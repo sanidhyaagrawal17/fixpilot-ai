@@ -282,7 +282,8 @@ class DebugAgent:
                     source_code=source_code,
                     doc_references=doc_refs,
                     previous_failed_fix=previous_failed_fix,
-                    test_failure_output=test_failure_output
+                    test_failure_output=test_failure_output,
+                    test_code=active_test_code
                 )
                 d_ana_ms = int((time.perf_counter() - t_ana) * 1000)
                 telemetry_breakdown[f"diagnose_attempt_{attempts}_ms"] = d_ana_ms
@@ -314,7 +315,8 @@ class DebugAgent:
                     source_code=source_code,
                     previous_failed_fix=previous_failed_fix,
                     test_failure_output=test_failure_output,
-                    filename=filename
+                    filename=filename,
+                    test_code=active_test_code
                 )
                 d_fix_ms = int((time.perf_counter() - t_fix) * 1000)
                 telemetry_breakdown[f"synthesize_attempt_{attempts}_ms"] = d_fix_ms

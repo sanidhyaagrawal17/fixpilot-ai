@@ -26,7 +26,8 @@ class RootCauseAnalyzer:
         source_code: str,
         doc_references: List[DocReference],
         previous_failed_fix: Optional[str] = None,
-        test_failure_output: Optional[str] = None
+        test_failure_output: Optional[str] = None,
+        test_code: Optional[str] = None
     ) -> AnalysisResult:
         """Invokes Nemotron-3 Ultra to determine why the code failed and outline the fix strategy."""
         docs_summary = "\n".join([f"- {d.title} ({d.url}): {d.snippet}" for d in doc_references])
@@ -39,6 +40,11 @@ class RootCauseAnalyzer:
             f"TARGET SOURCE CODE:\n```python\n{source_code}\n```\n\n"
             f"DOCUMENTATION & WEB CONTEXT:\n{docs_summary}\n"
         )
+
+        if test_code and test_code.strip():
+            user_content += (
+                f"\nTEST HARNESS & VERIFICATION ASSERTIONS:\n```python\n{test_code}\n```\n"
+            )
 
         if previous_failed_fix and test_failure_output:
             user_content += (

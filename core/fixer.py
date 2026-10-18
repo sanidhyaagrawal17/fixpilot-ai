@@ -41,7 +41,8 @@ class CodeFixer:
         source_code: str,
         previous_failed_fix: Optional[str] = None,
         test_failure_output: Optional[str] = None,
-        filename: str = "solution.py"
+        filename: str = "solution.py",
+        test_code: Optional[str] = None
     ) -> FixResult:
         """Synthesizes repaired code, evaluates diff, and prepares structured fix metadata."""
         user_content = (
@@ -50,6 +51,12 @@ class CodeFixer:
             f"SUGGESTED APPROACH:\n{analysis.suggested_approach}\n\n"
             f"ORIGINAL CODE TO FIX:\n```python\n{source_code}\n```\n"
         )
+
+        if test_code and test_code.strip():
+            user_content += (
+                f"\nTEST HARNESS & VERIFICATION REQUIREMENTS:\n```python\n{test_code}\n```\n"
+                f"Ensure your repaired code satisfies all test assertions and edge cases above.\n"
+            )
 
         if previous_failed_fix and test_failure_output:
             user_content += (

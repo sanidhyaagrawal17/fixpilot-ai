@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -97,8 +97,9 @@ async def debug_code_stream(request: DebugRequest):
 
 
 @app.get("/api/scenarios")
-async def get_scenarios() -> List[Dict[str, str]]:
+async def get_scenarios(response: Response) -> List[Dict[str, str]]:
     """Returns pre-built test scenarios for instant demonstration."""
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
     scenarios_dir = BASE_DIR / "tests" / "scenarios"
     scenario_list = []
 

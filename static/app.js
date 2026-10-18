@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 6. Fetch and render pre-built scenarios
   async function loadScenarios() {
     try {
-      const resp = await fetch("/api/scenarios");
+      const resp = await fetch("/api/scenarios?t=" + Date.now(), { cache: "no-store" });
       if (resp.ok) {
         const scenarios = await resp.json();
         scenarioGroup.innerHTML = "";
