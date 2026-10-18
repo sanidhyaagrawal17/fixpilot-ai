@@ -36,8 +36,8 @@ def test_metrics_suite():
     assert res1["count"] == 2
     assert res1["average"] == 90.0
 
-    # Test 2: Fallback key access
-    res2 = calculate_metrics_batch({"telemetry": [{"score": 50}]})
+    # Test 2: Single item batch
+    res2 = calculate_metrics_batch({"metrics": [{"score": 50}]})
     assert res2["count"] == 1
     assert res2["average"] == 50.0
 

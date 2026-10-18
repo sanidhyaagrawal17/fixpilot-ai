@@ -75,6 +75,11 @@ class CodeFixer:
             parsed = clean_json_response(raw_response)
 
             fixed_code = parsed.get("fixed_code", source_code)
+            if fixed_code and fixed_code.strip().startswith("```"):
+                code_match = re.search(r"```(?:[a-zA-Z]+)?\s*([\s\S]*?)\s*```", fixed_code.strip())
+                if code_match:
+                    fixed_code = code_match.group(1).strip()
+
             explanation = parsed.get("explanation", "Applied automated bug fix.")
             changes_summary = parsed.get("changes_summary", ["Modified source code."])
 

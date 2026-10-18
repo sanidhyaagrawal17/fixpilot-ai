@@ -12,13 +12,23 @@ def clean_json_response(raw_text: str) -> Dict[str, Any]:
     """Extract and parse clean JSON from model output, handling reasoning prefixes, markdown blocks, and unescaped characters."""
     cleaned = raw_text.strip()
 
+    def try_load(s: str) -> Optional[Dict[str, Any]]:
+        if not s or not s.strip():
+            return None
+        # Remove trailing commas: e.g. {"a": 1, } -> {"a": 1 }
+        s_clean = re.sub(r',\s*([\]}])', r'\1', s.strip())
+        try:
+            return json.loads(s_clean, strict=False)
+        except Exception:
+            pass
+        return None
+
     # 1. Search for ```json { ... } ``` or ``` { ... } ``` blocks
     json_blocks = re.findall(r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", cleaned, re.IGNORECASE)
     for block in json_blocks:
-        try:
-            return json.loads(block.strip(), strict=False)
-        except Exception:
-            pass
+        parsed = try_load(block)
+        if parsed is not None:
+            return parsed
 
     # 2. Balanced brace extractor from first '{' to matching '}'
     start = cleaned.find("{")
@@ -37,14 +47,9 @@ def clean_json_response(raw_text: str) -> Dict[str, Any]:
                     depth -= 1
                     if depth == 0:
                         candidate = cleaned[start : i + 1]
-                        try:
-                            return json.loads(candidate, strict=False)
-                        except Exception:
-                            sanitized = re.sub(r'(?<!\\)\n', r'\\n', candidate)
-                            try:
-                                return json.loads(sanitized, strict=False)
-                            except Exception:
-                                pass
+                        parsed = try_load(candidate)
+                        if parsed is not None:
+                            return parsed
                         break
             if c == '\\' and not escape:
                 escape = True
@@ -57,14 +62,24 @@ def clean_json_response(raw_text: str) -> Dict[str, Any]:
     last_brace = cleaned.rfind("}")
     if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
         snippet = cleaned[first_brace : last_brace + 1]
-        try:
-            return json.loads(snippet, strict=False)
-        except Exception:
-            sanitized = re.sub(r'(?<!\\)\n', r'\\n', snippet)
-            try:
-                return json.loads(sanitized, strict=False)
-            except Exception:
-                pass
+        parsed = try_load(snippet)
+        if parsed is not None:
+            return parsed
+
+    # 4. Regex fallback extraction for known properties
+    result = {}
+    known_keys = [
+        "root_cause", "explanation", "affected_code_snippet", "suggested_approach",
+        "fixed_code", "changes_summary", "error_type", "error_message"
+    ]
+    for key in known_keys:
+        m = re.search(rf'"{key}"\s*:\s*"(.*?)(?:"\s*,\s*"[a-zA-Z_][a-zA-Z0-9_]*"\s*:|"\s*\}})', cleaned, re.DOTALL)
+        if m:
+            val = m.group(1).replace(r'\"', '"').replace(r'\n', '\n').replace(r'\\', '\\')
+            result[key] = val
+
+    if result:
+        return result
 
     raise ValueError(f"Failed to parse LLM output as JSON: {raw_text[:250]}...")
 

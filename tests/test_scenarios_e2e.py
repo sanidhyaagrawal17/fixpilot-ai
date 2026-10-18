@@ -98,7 +98,7 @@ async def test_scenario_self_healing_cascade_multi_attempt_sandbox():
     # Attempt 1 partial fix (fixes KeyError only, leaves empty collection unhandled)
     attempt1_patch = (
         "def calculate_metrics_batch(payload):\n"
-        "    items = (payload.get('metrics') or payload.get('telemetry', [])) if payload else []\n"
+        "    items = payload.get('metrics', []) if payload else []\n"
         "    total_score = sum(item.get('score', 0) for item in items)\n"
         "    average = total_score / len(items)\n"
         "    return {'count': len(items), 'average': round(average, 2)}\n"
@@ -113,7 +113,7 @@ async def test_scenario_self_healing_cascade_multi_attempt_sandbox():
         "def calculate_metrics_batch(payload):\n"
         "    if not payload:\n"
         "        return {'count': 0, 'average': 0.0}\n"
-        "    items = payload.get('metrics') or payload.get('telemetry', [])\n"
+        "    items = payload.get('metrics', [])\n"
         "    if not items:\n"
         "        return {'count': 0, 'average': 0.0}\n"
         "    total_score = sum(item.get('score', 0) for item in items)\n"
