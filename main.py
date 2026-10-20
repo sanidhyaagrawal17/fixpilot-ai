@@ -1,5 +1,6 @@
 import importlib
 import logging
+import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -115,7 +116,11 @@ async def get_scenarios(response: Response) -> List[Dict[str, str]]:
 
     for mod_name in modules:
         try:
-            mod = importlib.import_module(f"tests.scenarios.{mod_name}")
+            full_name = f"tests.scenarios.{mod_name}"
+            if full_name in sys.modules:
+                mod = importlib.reload(sys.modules[full_name])
+            else:
+                mod = importlib.import_module(full_name)
             scenario_list.append({
                 "id": mod_name,
                 "description": getattr(mod, "DESCRIPTION", mod_name),

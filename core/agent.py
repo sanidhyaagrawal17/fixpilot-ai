@@ -353,6 +353,14 @@ class DebugAgent:
                 d_tst_ms = int((time.perf_counter() - t_tst) * 1000)
                 telemetry_breakdown[f"verify_attempt_{attempts}_ms"] = d_tst_ms
 
+                logger.info(
+                    f"[{loop_label}] Sandbox result: passed={test_result.passed}, "
+                    f"exit_code={test_result.exit_code}, duration={d_tst_ms}ms\n"
+                    f"--- Sandbox Console Output ---\n{test_result.output}\n"
+                    f"--- Repaired Code Evaluated ---\n{current_fix.fixed_code}\n"
+                    f"--- Test Code Evaluated ---\n{active_test_code}\n"
+                )
+
                 if test_result.passed:
                     step_tst = record_step(
                         AgentStatus.SUCCESS,
