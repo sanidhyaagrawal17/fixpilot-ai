@@ -172,7 +172,27 @@ Every citation returned by Tavily includes full attribution: title, URL, snippet
 
 ---
 
-## 👥 8. Author & Repository Information
+## 💬 9. Developer Feedback: Nebius Token Factory & NVIDIA NIM
+> *Submitted for the **Most Valuable Feedback ($100 + NVIDIA Swag)** Prize & Mandatory Evaluation Field.*
+
+### 1. Nebius Token Factory
+- **What Worked Exceptionally Well**:
+  - **OpenAI-Compatible Drop-In**: Seamless integration into `httpx` and `AsyncOpenAI` client abstractions. Zero proprietary SDK friction.
+  - **High-Throughput Token Generation**: Sub-second TTFT (Time-To-First-Byte) and high output tokens/sec on Nemotron-3 models, enabling real-time streaming timelines in our SSE loop.
+- **Constructive Friction & Recommendations**:
+  - **Payment / Verification Gate**: Requiring international credit card validation upfront creates friction for student developers and global hackathon participants without US/EU credit cards. Offering temporary hackathon token coupons or non-credit-card sandbox tiers would drastically improve student adoption.
+
+### 2. NVIDIA NIM & Nemotron Family
+- **What Worked Exceptionally Well**:
+  - **Nemotron-3 Ultra 550B Frontier Reasoning**: Outstanding multi-step root-cause diagnostics. In complex multi-layer bugs (`scenario_self_healing_cascade`), Ultra 550B consistently isolated both the apparent `KeyError` and the downstream `ZeroDivisionError` on empty collections in a single pass.
+  - **Nemotron-3 Nano 30B Polyglot Triage**: Ultra-fast classification (<4s) accurately discriminating between Python and JavaScript syntax/runtime faults without burning high-parameter inference tokens.
+- **Constructive Friction & Recommendations**:
+  - **Worker Concurrency Limit Handling (HTTP 503)**: On high-traffic developer clusters, requests periodically hit `Worker local total request limit reached (16/16)`. A built-in server-side queue with estimated wait time in the response headers (e.g. `Retry-After: 3`) would be far superior to raw 503 drops.
+  - **Account Endpoint Parity**: Specific model slugs in the catalog (e.g. `nvidia/nemotron-3-super-120b-a12b`) occasionally returned `404: Function not found for account`. More explicit documentation or dynamic fallback routing in the NIM console would help developers handle deprecations gracefully.
+
+---
+
+## 👥 10. Author & Repository Information
 - **Creator**: [Sanidhya Agrawal](https://github.com/sanidhyaagrawal17)
 - **Email**: sanidhyaagrawal2005@gmail.com
 - **Repository**: [https://github.com/sanidhyaagrawal17/fixpilot-ai](https://github.com/sanidhyaagrawal17/fixpilot-ai)
